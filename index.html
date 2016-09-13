@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>倒计时效果</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	</head>
+
+	<body>
+		<span class="msg" data-end="2016-10-01 09:00">倒计时还有</span>
+	</body>
+
+	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+	<script>
+		$('.msg')
+
+		//  每次更新倒计时的主要逻辑
+		.on('updateEndTime', function() {
+
+				var now = new Date().getTime();
+				
+				var diff = new Date($(this).attr('data-end')).getTime() - now;
+				var timeStr = [];
+
+				if(diff > 0) {
+
+					diff = ~~(diff / 1000); // 相差的时间 转换为 秒
+					
+					
+
+					// >>>
+					timeStr.push(~~(diff / 86400)); // 天数
+					diff = diff % 86400;
+					// <<<
+					
+					// console.log(diff)
+
+					// >>>
+					timeStr.push(~~(diff / 3600)); // 小时
+					diff = diff % 3600; // 取余数，整数都被算到上面的小时里面了。余下的秒数一定小于1个小时，如果大于一个小时，上面就会多1
+					// <<<
+
+					// >>>
+					timeStr.push(~~(diff / 60)); // 分钟
+					diff = diff % 60;
+					// <<<
+
+					timeStr.push(diff); // 秒
+
+					$(this).text('倒计时还有' + timeStr.join(':'));
+
+				} else {
+					clearInterval($(this).attr('timeId'));
+					$(this).text('已经结束了！');
+				}
+			})
+			//  开始执行倒计时的逻辑
+			.on('startUpdate', function() {
+				var me = $(this);
+				me.attr('timeId', setInterval(function() {
+					me.triggerHandler('updateEndTime')
+				}, 1000));
+			})
+			//  触发开始
+			.triggerHandler('startUpdate')
+	</script>
+
+</html>
